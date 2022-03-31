@@ -21,7 +21,7 @@ def get_authors():
     return jsonify(authors)
 
 
-@author_bp.route("/authors/<int:author_id>/", methods=["GET"])  # get an author by his id
+@author_bp.route("/authors/<int:author_id>", methods=["GET"])  # get an author by his id
 def get_author(author_id):
     author = AuthorModel.find_by_id(author_id)
     if not author:
@@ -42,7 +42,7 @@ def create_author():
     return jsonify({"message": f"The author with id {author.id} was created!"})
 
 
-@author_bp.route("/authors/<int:author_id>/", methods=["PATCH"])
+@author_bp.route("/authors/<int:author_id>", methods=["PATCH"])
 def update_author(author_id):
     author = AuthorModel.find_by_id(author_id, to_dict=False)
     if not author:
@@ -50,16 +50,17 @@ def update_author(author_id):
     if not request.json:  # a patch request mustn't be empty
         return jsonify({"message": "Please fill in all information about the author!"}), 400
     first_name, last_name = request.json.get("first_name"), request.json.get("last_name")
-    # we need to check if the entered property exists
+
     if first_name:
         author.first_name = first_name
+    if last_name:
         author.last_name = last_name
     author.save_to_db()
     return jsonify({"message": "The author was updated"})
 
 
 @author_bp.route("/authors/<int:author_id>", methods=["DELETE"])
-def delete_user(author_id):
+def delete_author(author_id):
     response_code = AuthorModel.delete_by_id(author_id)
     if response_code == 404:
         return jsonify({"message": "Author not found."}), 404
