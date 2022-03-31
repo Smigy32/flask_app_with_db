@@ -9,7 +9,9 @@ class AuthorModel(base):
     id = Column(Integer, primary_key=True)
     first_name = Column(String(30), nullable=False)
     last_name = Column(String(30), nullable=False)
-    books = relationship("BookModel")
+    books = relationship("BookModel", lazy='dynamic',
+                         cascade="all, delete-orphan",
+                         foreign_keys="BookModel.author_id")
 
     @classmethod
     def return_all(cls, offset, limit):
@@ -66,7 +68,7 @@ class BookModel(base):
     title = Column(String(50), nullable=False)
     genre = Column(String(30), nullable=False)
     author_id = Column(Integer, ForeignKey('authors.id'))
-    author = relationship(AuthorModel)
+    author = relationship(AuthorModel, back_populates='books')
 
     @classmethod
     def return_all(cls, offset, limit):
